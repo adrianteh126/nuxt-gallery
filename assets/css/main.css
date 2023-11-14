@@ -1,0 +1,24 @@
+/* Pedefined value */
+:root {
+  margin: 0;
+  padding: 0;
+
+  /* font family */
+  /* --body-font--: "Exo 2", sans-serif; */
+  --dark-color: #1c1d22;
+  --dark-color2: #23242a;
+  --light-color: #f3f3f3;
+  --light-color2: #dddddd;
+  --yellow-color: #e0fb4a;
+  --yellow-color2: #d3eb4e;
+}
+
+/* Adding hover effect for inactive icons */
+.icon-inactive {
+  scale: 1;
+  transition: scale 0.3s ease-in-out;
+}
+
+.icon-inactive:hover {
+  scale: 1.2;
+}
