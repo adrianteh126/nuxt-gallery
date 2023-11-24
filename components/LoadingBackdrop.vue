@@ -6,27 +6,27 @@
   </div>
 </template>
 
-<script>
-import { Modal } from "bootstrap";
+<script lang="ts">
+import { Modal } from 'bootstrap'
 
 export default {
   data() {
-    const loadingBackdrop = ref(null);
+    const loadingBackdrop: Ref<Modal | null> = ref(null)
     return {
-      loadingBackdrop,
-    };
+      loadingBackdrop
+    }
   },
   mounted() {
-    this.loadingBackdrop = new Modal("#loadingBackdrop", {
-      backdrop: "static",
-    });
+    this.loadingBackdrop = new Modal('#loadingBackdrop', {
+      backdrop: 'static'
+    })
   },
   methods: {
     toggleLoadingBackdrop() {
-      this.loadingBackdrop.toggle();
-    },
-  },
-};
+      this.loadingBackdrop!.toggle()
+    }
+  }
+}
 </script>
 
 <style>
