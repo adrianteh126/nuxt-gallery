@@ -8,7 +8,7 @@ import {
   GoogleAuthProvider,
   signInWithPopup
 } from 'firebase/auth'
-import type { UserCredential } from 'firebase/auth'
+import type { UserCredential, OAuthCredential } from 'firebase/auth'
 
 import { auth } from './firebaseConnection'
 
@@ -16,7 +16,7 @@ import { auth } from './firebaseConnection'
 export const signUp = (email: string, password: string) => {
   return new Promise<
     { errorCode: string; errorMessage: string } | UserCredential
-  >((resolve, reject) => {
+  >((resolve) => {
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in
@@ -36,17 +36,16 @@ export const signUp = (email: string, password: string) => {
 export const signIn = (email: string, password: string) => {
   return new Promise<
     { errorCode: string; errorMessage: string } | UserCredential
-  >((resolve, reject) => {
+  >((resolve) => {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in
-        // export const user = userCredential.user;
+        // export const user = userCredential.user;\
         resolve(userCredential)
       })
       .catch((error) => {
         const errorCode = error.code
         const errorMessage = error.message
-        console.log({ errorCode, errorMessage })
         resolve({ errorCode, errorMessage })
       })
   })
@@ -54,21 +53,30 @@ export const signIn = (email: string, password: string) => {
 
 // Sign in with Google Pop Up
 export const signInGooglePopUp = () => {
-  new Promise((resolve, reject) => {
+  return new Promise<
+    | {
+        errorCode: string
+        errorMessage: string
+        email: string
+        credential: OAuthCredential | null
+      }
+    | UserCredential
+  >((resolve) => {
     signInWithPopup(auth, new GoogleAuthProvider())
-      .then((result) => {
+      .then((userCredential) => {
         // This gives you a Google Access Token. You can use it to access the Google API.
-        const credential = GoogleAuthProvider.credentialFromResult(result)
+        const credential =
+          GoogleAuthProvider.credentialFromResult(userCredential)
         const token = credential!.accessToken
         // The signed-in user info.
-        const user = result.user
+        const user = userCredential.user
         // IdP data available using getAdditionalUserInfo(result)
         console.log(
           `Sign in successfully with token : ${token}, user : ${JSON.stringify(
             user.email
           )}`
         )
-        resolve(result)
+        resolve(userCredential)
       })
       .catch((error) => {
         // Handle Errors here.

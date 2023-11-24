@@ -6,10 +6,7 @@ import {
   deleteDoc,
   doc,
   query,
-  where,
   setDoc,
-  collectionGroup,
-  Timestamp,
   updateDoc,
   orderBy,
   limit
@@ -62,7 +59,7 @@ const del = async (col: string, id: string) => {
 }
 
 const update = async (postId: string, col: string, newUpdate: object) => {
-  const docRef = doc(firestore, 'posts', postId)
+  const docRef = doc(firestore, col, postId)
 
   return await updateDoc(docRef, newUpdate)
 }
