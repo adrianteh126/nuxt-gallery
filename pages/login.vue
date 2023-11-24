@@ -1,98 +1,59 @@
 <template>
+  <!-- <div class="text-center">
+    <p>Landing Page</p>
+  </div> -->
   <div
-    class="d-flex flex-column justify-content-center align-item-center w-100"
+    class="container-fluid landing-page vh-100 d-flex flex-column justify-content-center align-items-center"
   >
-    <div
-      class="container p-3 mb-3 border border-light rounded text-center"
-      style="background-color: var(--dark-color2); max-width: 40vw"
-    >
-      <p v-if="!currentUser">⭕Please Log In</p>
-      <p v-else>👩‍🤝‍🧑🏼Current User: {{ currentUser.displayName }}</p>
-    </div>
-    <div class="container">
-      <div class="row justify-content-center">
-        <div class="col-md-6">
-          <div class="card">
-            <div class="card-header">Login</div>
-            <div class="card-body">
-              <div v-if="!currentUser">
-                <div class="form-group">
-                  <label for="email">Email address</label>
-                  <input
-                    type="email"
-                    class="form-control"
-                    id="email"
-                    placeholder="Enter email"
-                    v-model="email"
-                  />
-                </div>
-                <div class="form-group">
-                  <label for="password">Password</label>
-                  <input
-                    type="password"
-                    class="form-control"
-                    id="password"
-                    placeholder="Password"
-                    v-model="password"
-                  />
-                </div>
-              </div>
-              <div v-else>
-                <h6>You are logged in.</h6>
-                <p>UID: {{ currentUser.uid }}</p>
-                <p>Name: {{ currentUser.displayName }}</p>
-                <p>Email: {{ currentUser.email }}</p>
-                <p>PhotoURL: {{ currentUser.photoURL }}</p>
-                <p>Metadata: {{ currentUser.metadata }}</p>
-              </div>
-              <div :class="promptMessage">{{ errorMessage }}</div>
-              <div v-if="!currentUser" class="d-flex justify-content-between">
-                <div>
-                  <button
-                    @click="handleSignIn('email')"
-                    class="btn btn-primary mt-3 me-2"
-                  >
-                    Sign In
-                  </button>
-                  <button
-                    v-if="!currentUser"
-                    @click="handleSignIn('google')"
-                    class="btn btn-info mt-3 me-2"
-                  >
-                    Sign In with Google
-                  </button>
-                </div>
-                <button @click="handleSignUp" class="btn btn-warning mt-3 me-2">
-                  Sign Up
-                </button>
-              </div>
-              <button
-                v-else
-                @click="useFirebaseAuth.signOut()"
-                class="btn btn-danger mt-3"
-              >
-                Sign Out
-              </button>
-            </div>
-          </div>
-        </div>
+    <div>
+      <div
+        class="logo d-flex gap-2 justify-content-center align-items-center mb-3 text-decoration-none"
+      >
+        <IconsNuxtGallery />
+        <h2 class="m-0 fs-5">Nuxt Gallery</h2>
+      </div>
+      <div class="d-flex gap-2 pt-1">
+        <button
+          class="btn btn-sm landing-page-btn px-3"
+          @click="showLoginModal"
+        >
+          Log In
+        </button>
+        <button
+          class="btn btn-sm landing-page-btn px-3"
+          @click="showSignUpModal"
+        >
+          Sign Up
+        </button>
       </div>
     </div>
   </div>
+
+  <SignUpLoginModal ref="signUpLoginModal" />
 </template>
 
-<script lang="ts">
-import type { User } from 'firebase/auth'
-
+<script>
 export default {
-  created() {},
+  created() {
+    useFirebaseAuth.onAuthStateChanged(useFirebaseAuth.auth, (user) => {
+      this.currentUser = user
+
+      if (this.currentUser) {
+        this.authStore.setUser(user)
+      } else {
+        this.authStore.setUser(null)
+      }
+    })
+  },
   data() {
-    const currentUser = ref<User | null>(null)
+    const currentUser = ref(null)
     const [email, password] = ''
     const errorMessage = ref('')
     const isError = ref(true)
-    return { currentUser, email, password, errorMessage, isError }
+    const authStore = useAuthStore()
+    return { currentUser, email, password, errorMessage, isError, authStore }
   },
+  emits: ['user-login'],
   computed: {
     promptMessage() {
       return this.isError
@@ -100,14 +61,19 @@ export default {
         : 'mt-2 text-success fw-bold'
     }
   },
-  mounted() {
-    // auth state listener
-    useFirebaseAuth.onAuthStateChanged(useFirebaseAuth.auth, (user) => {
-      this.currentUser = user
-    })
-  },
+  mounted() {},
   methods: {
-    async handleSignIn(method: string) {
+    showSignUpModal() {
+      this.$refs.signUpLoginModal.showModal(
+        this.$refs.signUpLoginModal.signUpModal
+      )
+    },
+    showLoginModal() {
+      this.$refs.signUpLoginModal.showModal(
+        this.$refs.signUpLoginModal.loginModal
+      )
+    },
+    async handleSignIn(method) {
       let result
       if (method === 'email') {
         result = await useFirebaseAuth.signIn(this.email, this.password)
@@ -144,4 +110,32 @@ export default {
     }
   }
 }
+
+definePageMeta({
+  layout: 'fullpage'
+})
 </script>
+
+<style scoped>
+.landing-page {
+  color: var(--light-color);
+  background-color: var(--dark-color);
+}
+
+.logo {
+  color: var(--yellow-color);
+}
+
+.landing-page-btn {
+  color: var(--dark-color);
+  background-color: var(--yellow-color);
+  border-radius: 50;
+  transition: color 0.3s, background-color 0.3s;
+}
+
+.landing-page-btn:hover {
+  color: var(--yellow-color);
+  background-color: var(--dark-color);
+  border-color: var(--yellow-color);
+}
+</style>

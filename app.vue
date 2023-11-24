@@ -1,23 +1,44 @@
 <template lang="html">
-  <div>
-    <div class="d-flex dashboard">
-      <SideNavBar />
-      <NuxtPage />
-    </div>
-  </div>
+  <!-- <div
+    class="position-fixed z-1 text-break text-center text-dark bg-danger w-100"
+    style="--bs-bg-opacity: 0.5"
+    v-if="currentUser"
+  >
+    &lt;DEBUG&gt; Current User :
+    <b>{{ currentUser.providerData }} </b>
+  </div> -->
+  <NuxtLayout>
+    <NuxtPage />
+  </NuxtLayout>
 </template>
 
-<script setup></script>
+<script>
+// import { useAuthStore } from './stores/authStore'
 
-<style lang="scss" scoped>
-.dashboard {
-  background-color: var(--dark-color);
-  color: var(--light-color);
-  margin-left: 250px;
-  min-height: 100vh;
-
-  @media (max-width: 767.5px) {
-    margin-left: 0;
+export default {
+  data() {
+    // const currentUser = ref(null)
+    // const authStore = useAuthStore()
+    // return { currentUser, authStore }
+  },
+  created() {
+    // useFirebaseAuth.onAuthStateChanged(useFirebaseAuth.auth, (user) => {
+    //   this.currentUser = user
+    //   if (!!this.currentUser) {
+    //     this.login(this.currentUser)
+    //   }
+    // })
+  },
+  mounted() {},
+  methods: {
+    // login() {
+    //   this.authStore.setUser(this.currentUser)
+    // },
+    // logout() {
+    //   this.authStore.setUser(null)
+    // }
   }
 }
-</style>
+</script>
+
+<style lang="scss" scoped></style>
