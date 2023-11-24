@@ -41,11 +41,14 @@
               id="captionTxt"
               placeholder="Your caption here"
               maxlength="24"
-              v-model="captionText"
+              v-model="formData.captionText"
             />
           </div>
           <div class="w-50">
-            <img class="rounded d-block img-fluid m-auto" :src="selectedFile" />
+            <img
+              class="rounded d-block img-fluid m-auto"
+              :src="formData.selectedFile"
+            />
           </div>
         </div>
         <div class="modal-footer border-secondary">
@@ -68,17 +71,17 @@ export default {
   data() {
     const createPostModal = ref(null)
     const charLimitPopover = ref(null)
-    const captionText = ref('')
-    const selectedFile = ref(
-      'https://cdn-icons-png.flaticon.com/128/4671/4671171.png'
-    )
-    const uploadImg = ref(null)
+    const formData = {
+      captionText: ref(''),
+      selectedFile: ref(
+        'https://cdn-icons-png.flaticon.com/128/4671/4671171.png'
+      ),
+      uploadImg: ref(null)
+    }
     return {
       createPostModal,
       charLimitPopover,
-      captionText,
-      selectedFile,
-      uploadImg
+      formData
     }
   },
   mounted() {
@@ -127,13 +130,13 @@ export default {
         return
       }
 
-      this.uploadImg = selectedFile
-      this.selectedFile = selectedFile
+      this.formData.uploadImg = selectedFile
+      this.formData.selectedFile = selectedFile
 
       if (selectedFile.type.startsWith('image/')) {
         const reader = new FileReader()
         reader.onload = () => {
-          this.selectedFile = reader.result
+          this.formData.selectedFile = reader.result
         }
         reader.readAsDataURL(selectedFile)
       } else {
@@ -145,21 +148,21 @@ export default {
 
     async createPost() {
       // TODO : validation for adding caption and select img before upload
-      if (this.captionText && this.uploadImg) {
+      if (this.formData.captionText && this.formData.uploadImg) {
         try {
           this.toggleLoadingBackdrop()
 
-          const formData = new FormData()
-          formData.append('file', this.uploadImg)
-          formData.append('userId', 'bxyH2D3P6rEPTgSxdz49') // TODO :should upload based on current userId
+          const fileData = new FormData()
+          fileData.append('file', this.formData.uploadImg)
+          fileData.append('userId', 'bxyH2D3P6rEPTgSxdz49') // TODO :should upload based on current userId
           const imgUrl = await $fetch('/api/uploadImage', {
             method: 'POST',
-            body: formData
+            body: fileData
           }).then((res) => res.result)
           const res = await $fetch('/api/create', {
             method: 'POST',
             body: {
-              caption: this.captionText,
+              caption: this.formData.captionText,
               imgUrl: imgUrl,
               userId: 'bxyH2D3P6rEPTgSxdz49'
             }
@@ -168,6 +171,7 @@ export default {
           this.toggleLoadingBackdrop()
           this.closeModal()
           this.$refs.toast.showToast('Create post successfully!')
+          this.clearForm()
         } catch (error) {
           this.toggleLoadingBackdrop()
           console.error('Failed to create post: ', error)
@@ -176,15 +180,22 @@ export default {
         console.error("createPost() : Didn't have caption or select image!")
     },
 
-    async uploadImage() {
-      // logic here - call api
+    // utils related
+    clearForm() {
+      this.formData = {
+        captionText: ref(''),
+        selectedFile: ref(
+          'https://cdn-icons-png.flaticon.com/128/4671/4671171.png'
+        ),
+        uploadImg: ref(null)
+      }
     }
   },
   watch: {
-    captionText(newInput, lastInput) {
+    'formData.captionText'(newInput, lastInput) {
       if (newInput.length > 23) {
         this.triggedPopover()
-        this.captionText = this.captionText.slice(0, -1)
+        this.formData.captionText = this.formData.captionText.slice(0, -1)
       }
     }
   }
