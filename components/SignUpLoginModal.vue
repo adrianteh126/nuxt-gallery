@@ -106,7 +106,9 @@
             </div>
           </div>
         </div>
-        <p>{{ errorMessage }}</p>
+        <p class="ps-3 fw-bold" :class="{ 'text-danger': isError }">
+          {{ errorMessage }}
+        </p>
         <div class="modal-footer border-secondary">
           <button
             type="button"
@@ -225,7 +227,9 @@
             </div>
           </div>
         </div>
-        <p>{{ errorMessage }}</p>
+        <p class="ps-3 fw-bold" :class="{ 'text-danger': isError }">
+          {{ errorMessage }}
+        </p>
         <div class="modal-footer border-secondary">
           <button
             type="button"
@@ -270,6 +274,7 @@ export default defineNuxtComponent({
     this.loginModal = new Modal('#loginModal')
   },
   methods: {
+    // handlers
     async handleSignIn(method) {
       this.toggleLoadingBackdrop()
       let result
@@ -290,18 +295,20 @@ export default defineNuxtComponent({
         console.error('Sign in error:', result.errorMessage)
         this.isError = true
         this.errorMessage = result.errorMessage.slice(10)
+        setTimeout(() => {
+          this.toggleLoadingBackdrop()
+        }, 300)
       } else {
         // Handle successful sign in
         this.isError = false
         this.errorMessage = 'Sign in successfully'
         console.log('Sign in successful!', result)
         this.closeModal(this.loginModal)
+        this.toggleLoadingBackdrop()
+        await navigateTo('/')
       }
-      this.toggleLoadingBackdrop()
-      await navigateTo('/')
     },
     async handleSignUp() {
-      // this.toggleLoadingBackdrop()
       // validation : user submit empty form
       if (
         !this.formData.email ||
@@ -345,7 +352,9 @@ export default defineNuxtComponent({
         this.isError = true
         this.errorMessage = result.errorMessage.slice(10)
         console.error('Sign up error:', this.errorMessage)
-        this.toggleLoadingBackdrop()
+        setTimeout(() => {
+          this.toggleLoadingBackdrop()
+        }, 500)
       } else {
         // Handle successful sign up
         this.isError = false

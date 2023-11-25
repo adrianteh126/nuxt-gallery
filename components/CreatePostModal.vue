@@ -51,6 +51,7 @@
             />
           </div>
         </div>
+        <p class="ps-3 text-danger fw-bold">{{ errorMessage }}</p>
         <div class="modal-footer border-secondary">
           <button type="button" class="create-post-btn btn" @click="createPost">
             Create
@@ -78,10 +79,12 @@ export default {
       ),
       uploadImg: ref(null)
     }
+    const errorMessage = ref('')
     return {
       createPostModal,
       charLimitPopover,
-      formData
+      formData,
+      errorMessage
     }
   },
   mounted() {
@@ -94,6 +97,7 @@ export default {
     })
   },
   methods: {
+    // modal related
     showModal() {
       this.createPostModal.show()
     },
@@ -114,6 +118,8 @@ export default {
     toggleLoadingBackdrop() {
       this.$refs.loadingBackdrop.toggleLoadingBackdrop()
     },
+
+    // handlers related
     handleFileChange(event) {
       const selectedFile = event.target.files[0]
 
@@ -145,13 +151,24 @@ export default {
         )
       }
     },
-
     async createPost() {
-      // TODO : validation for adding caption and select img before upload
+      // validation : user not complete form
+      if (!this.formData.captionText || !this.formData.uploadImg) {
+        const errorMessage = "Didn't have caption or select image!"
+        this.errorMessage = errorMessage
+        return
+      }
+
+      // validation : user not uploading image type file
+      if (!this.formData.uploadImg.type.startsWith('image/')) {
+        const errorMessage = 'The upload file is not an image!'
+        this.errorMessage = errorMessage
+        return
+      }
+
+      this.toggleLoadingBackdrop()
       if (this.formData.captionText && this.formData.uploadImg) {
         try {
-          this.toggleLoadingBackdrop()
-
           const fileData = new FormData()
           fileData.append('file', this.formData.uploadImg)
           fileData.append('userId', 'bxyH2D3P6rEPTgSxdz49') // TODO :should upload based on current userId
@@ -159,6 +176,7 @@ export default {
             method: 'POST',
             body: fileData
           }).then((res) => res.result)
+
           const res = await $fetch('/api/create', {
             method: 'POST',
             body: {
@@ -168,12 +186,23 @@ export default {
             }
           })
 
-          this.toggleLoadingBackdrop()
+          if (res.error) this.errorMessage = res.error
+
+          setTimeout(() => {
+            this.toggleLoadingBackdrop()
+          }, 500)
           this.closeModal()
-          this.$refs.toast.showToast('Create post successfully!')
           this.clearForm()
+
+          this.$refs.toast.showToast('Create post successfully!')
+
+          // TODO : fix this hard-coded part to refresh post lists
+          await navigateTo('/bookmark')
+          await navigateTo('/')
         } catch (error) {
-          this.toggleLoadingBackdrop()
+          setTimeout(() => {
+            this.toggleLoadingBackdrop()
+          }, 500)
           console.error('Failed to create post: ', error)
         }
       } else
