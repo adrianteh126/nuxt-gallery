@@ -37,7 +37,7 @@
         </div>
         <button
           class="text-decoration-none d-block p-2 border-0 text-start"
-          @click="handleSignOut"
+          @click="showConfirmLogoutModal()"
         >
           🚪 Logout
         </button>
@@ -45,6 +45,7 @@
     </div>
   </div>
   <CreatePostModal ref="createPostModal" />
+  <ConfirmLogoutModal ref="confirmLogoutModal" />
   <Toast ref="toast" />
 </template>
 
@@ -55,10 +56,8 @@ export default {
     showCreatePostModal() {
       this.$refs.createPostModal.showModal()
     },
-    async handleSignOut() {
-      useFirebaseAuth.signOut()
-      this.$refs.toast.showToast('Logout successfully!')
-      await navigateTo('/login')
+    showConfirmLogoutModal() {
+      this.$refs.confirmLogoutModal.showModal()
     }
   }
 }

@@ -18,9 +18,6 @@ export default {
   created() {
     useFirebaseAuth.onAuthStateChanged(useFirebaseAuth.auth, (user) => {
       this.currentUser = user
-      if (!!this.currentUser) {
-        this.login(this.currentUser)
-      }
     })
   },
   mounted() {},
