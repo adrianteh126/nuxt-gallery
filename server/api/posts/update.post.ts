@@ -1,4 +1,4 @@
-import { update, getPostById } from '../utils/firestore'
+import { update, getPostById } from '../../utils/firestore'
 
 export default defineEventHandler(async (event) => {
   // retrieve the body from api called

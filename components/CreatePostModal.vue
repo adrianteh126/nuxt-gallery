@@ -172,12 +172,12 @@ export default {
           const fileData = new FormData()
           fileData.append('file', this.formData.uploadImg)
           fileData.append('userId', 'bxyH2D3P6rEPTgSxdz49') // TODO :should upload based on current userId
-          const imgUrl = await $fetch('/api/uploadImage', {
+          const imgUrl = await $fetch('/api/posts/uploadImage', {
             method: 'POST',
             body: fileData
           }).then((res) => res.result)
 
-          const res = await $fetch('/api/create', {
+          const res = await $fetch('/api/posts/create', {
             method: 'POST',
             body: {
               caption: this.formData.captionText,

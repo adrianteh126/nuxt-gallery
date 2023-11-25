@@ -47,7 +47,7 @@ import { useBookmarkStore } from '~/stores/bookmarkStore'
 const props = defineProps(['post'])
 
 const toggleLike = async () => {
-  await $fetch('/api/update', {
+  await $fetch('/api/posts/update', {
     method: 'POST',
     body: { id: props.post.id, liked: props.post.liked }
   })

@@ -1,4 +1,4 @@
-import { queryByCollection } from '../utils/firestore'
+import { queryByCollection } from '../../utils/firestore'
 
 export default defineEventHandler(async (event) => {
   try {

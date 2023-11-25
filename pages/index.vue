@@ -23,7 +23,7 @@ onMounted(() => {
 // use api to fetch the posts
 const queryPosts = async () => {
   // get the response value by $fetch
-  const res = await $fetch('/api/read')
+  const res = await $fetch('/api/posts/read')
   return res.docs
 }
 

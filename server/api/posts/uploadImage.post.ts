@@ -1,4 +1,4 @@
-import { uploadImage } from '../utils/storage'
+import { uploadImage } from '../../utils/storage'
 
 export default defineEventHandler(async (event) => {
   const formData = await readMultipartFormData(event)

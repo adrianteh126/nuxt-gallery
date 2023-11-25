@@ -1,4 +1,4 @@
-import { add } from '../utils/firestore'
+import { add } from '../../utils/firestore'
 import { Timestamp } from 'firebase/firestore'
 
 export default defineEventHandler(async (event) => {

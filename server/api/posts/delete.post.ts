@@ -1,4 +1,4 @@
-import { del } from '../utils/firestore'
+import { del } from '../../utils/firestore'
 
 export default defineEventHandler(async (event) => {
   const postId = '7DtPOBnsq5NWnazBfkEL'
