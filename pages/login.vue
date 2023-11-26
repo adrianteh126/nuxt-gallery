@@ -72,41 +72,6 @@ export default {
       this.$refs.signUpLoginModal.showModal(
         this.$refs.signUpLoginModal.loginModal
       )
-    },
-    async handleSignIn(method) {
-      let result
-      if (method === 'email') {
-        result = await useFirebaseAuth.signIn(this.email, this.password)
-      }
-      if (method === 'google') {
-        result = await useFirebaseAuth.signInGooglePopUp()
-      }
-
-      if (result && 'errorCode' in result && 'errorMessage' in result) {
-        // Handle the error here
-        console.error('Sign in error:', result.errorMessage)
-        this.isError = true
-        this.errorMessage = result.errorMessage.slice(10)
-      } else {
-        // Handle successful sign in
-        this.isError = false
-        this.errorMessage = 'Sign in successfully'
-        console.log('Sign in successful!', result)
-      }
-    },
-    async handleSignUp() {
-      const result = await useFirebaseAuth.signUp(this.email, this.password)
-      if (result && 'errorCode' in result && 'errorMessage' in result) {
-        // Handle the error here
-        console.error('Sign up error:', result.errorMessage)
-        this.isError = true
-        this.errorMessage = result.errorMessage.slice(10)
-      } else {
-        // Handle successful sign up
-        this.isError = false
-        this.errorMessage = 'Sign up successfully'
-        console.log('Sign up successful!', result)
-      }
     }
   }
 }
