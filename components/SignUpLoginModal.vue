@@ -259,6 +259,7 @@
   <!-- Toast -->
   <Toast ref="toast" />
 </template>
+
 <script>
 import { Modal } from 'bootstrap'
 
@@ -293,21 +294,22 @@ export default defineNuxtComponent({
       let result
       switch (method) {
         case 'email':
-          result = await useFirebaseAuth.signIn(
-            this.formData.email,
-            this.formData.password
-          )
+          result = await useFirebaseAuth
+            .signIn(this.formData.email, this.formData.password)
+            .catch((error) => {
+              return { error: error.message }
+            })
           break
         case 'google':
           result = await useFirebaseAuth.signInGooglePopUp()
           break
       }
 
-      if (result && 'errorCode' in result && 'errorMessage' in result) {
+      if (result.error) {
         // Handle the error here
-        console.error('Sign in error:', result.errorMessage)
+        console.error('Sign in error:', result.error)
         this.isError = true
-        this.errorMessage = result.errorMessage.slice(10)
+        this.errorMessage = result.error
         setTimeout(() => {
           this.toggleLoadingBackdrop()
         }, 300)

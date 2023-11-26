@@ -13,25 +13,36 @@ import { auth } from './firebaseConnection'
 
 // Sign up new user
 export const signUp = async (email: string, password: string) => {
-  return createUserWithEmailAndPassword(auth, email, password).catch(
-    (error) => {
-      throw new Error(error)
-    }
-  )
+  const userCredential = createUserWithEmailAndPassword(
+    auth,
+    email,
+    password
+  ).catch((error) => {
+    throw new Error(error)
+  })
+  return userCredential
 }
 
 // Sign in existing users
 export const signIn = async (email: string, password: string) => {
-  return signInWithEmailAndPassword(auth, email, password).catch((error) => {
+  const userCredential = signInWithEmailAndPassword(
+    auth,
+    email,
+    password
+  ).catch((error) => {
     throw new Error(error)
   })
+  return userCredential
 }
 
 // Sign in with Google Pop Up
 export const signInGooglePopUp = async () => {
-  return signInWithPopup(auth, new GoogleAuthProvider()).catch((error) => {
-    throw new Error(error)
-  })
+  const userCredential = signInWithPopup(auth, new GoogleAuthProvider()).catch(
+    (error) => {
+      throw new Error(error)
+    }
+  )
+  return userCredential
 }
 
 // Sign out existing users
