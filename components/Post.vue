@@ -3,7 +3,7 @@
   <div v-if="post" class="post card mb-3">
     <!-- User ID -->
     <div class="card-header d-flex bg-light align-items-center">
-      <IconsProfile />
+      <IconsProfile class="me-3" />
       <div class="bg-light">User ID: {{ post.userId }}</div>
     </div>
 

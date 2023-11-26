@@ -124,7 +124,7 @@
           <button
             type="button"
             class="create-post-btn btn fw-medium"
-            @click="handleSignUp"
+            @click="handleSignUp()"
           >
             Sign Up
           </button>
@@ -368,24 +368,11 @@ export default defineNuxtComponent({
         .catch((error) => {
           return { error: error.message }
         })
-      let firestoreCreateUser
-      if (!firebaseAuthSignUpAndUpdate.error) {
-        firestoreCreateUser = await $fetch('/api/users/create', {
-          method: 'POST',
-          body: {
-            uid: firebaseAuthSignUpAndUpdate.user.uid,
-            email: this.formData.email,
-            password: this.formData.password,
-            displayName: this.formData.displayName
-          }
-        })
-      }
 
       // Handle the error here
-      if (firebaseAuthSignUpAndUpdate.error || firestoreCreateUser.error) {
+      if (firebaseAuthSignUpAndUpdate.error) {
         this.isError = true
-        this.errorMessage =
-          firebaseAuthSignUpAndUpdate.error ?? firestoreCreateUser.error
+        this.errorMessage = firebaseAuthSignUpAndUpdate.error
         console.error('Sign up error:', this.errorMessage)
         setTimeout(() => {
           this.toggleLoadingBackdrop()
@@ -394,10 +381,7 @@ export default defineNuxtComponent({
         // Handle successful sign up
         this.isError = false
         this.errorMessage = 'Sign up successfully'
-        console.log('Sign up successfully!', [
-          firebaseAuthSignUpAndUpdate,
-          firestoreCreateUser
-        ])
+        console.log('Sign up successfully!', firebaseAuthSignUpAndUpdate)
         this.clearForm()
         this.closeModal(this.signUpModal)
         this.toggleLoadingBackdrop()
