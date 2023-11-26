@@ -1,10 +1,9 @@
 <template>
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width="32"
-    height="32"
+    :width="width"
+    :height="height"
     viewBox="0 0 512 512"
-    class="me-3"
   >
     <path
       fill="#1c1d22"
@@ -19,6 +18,16 @@
 
 <script lang="ts">
 export default {
-  name: 'Profile'
+  name: 'Profile',
+  props: {
+    width: {
+      type: Number,
+      default: 32
+    },
+    height: {
+      type: Number,
+      default: 32
+    }
+  }
 }
 </script>
