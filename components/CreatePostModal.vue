@@ -53,7 +53,11 @@
         </div>
         <p class="ps-3 text-danger fw-bold">{{ errorMessage }}</p>
         <div class="modal-footer border-secondary">
-          <button type="button" class="create-post-btn btn" @click="createPost">
+          <button
+            type="button"
+            class="create-post-btn btn fw-medium"
+            @click="createPost"
+          >
             Create
           </button>
         </div>

@@ -20,14 +20,14 @@
         <div class="modal-footer border-secondary">
           <button
             type="button"
-            class="create-post-btn btn"
+            class="create-post-btn btn fw-medium"
             @click="hideModal()"
           >
             Cancel
           </button>
           <button
             type="button"
-            class="btn btn-danger text-dark"
+            class="btn btn-danger text-dark fw-medium"
             @click="handleSignOut()"
           >
             Logout
