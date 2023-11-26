@@ -47,6 +47,17 @@
               maxlength="24"
               v-model="formData.confirmPassword"
             />
+            <label for="input-username" class="form-label mt-2"
+              >Username
+            </label>
+            <input
+              type="text"
+              class="form-control"
+              id="input-username"
+              placeholder="Your username"
+              maxlength="12"
+              v-model="formData.displayName"
+            />
           </div>
           <div class="d-flex w-50">
             <div
@@ -112,7 +123,7 @@
         <div class="modal-footer border-secondary">
           <button
             type="button"
-            class="create-post-btn btn"
+            class="create-post-btn btn fw-medium"
             @click="handleSignUp"
           >
             Sign Up
@@ -159,15 +170,6 @@
               maxlength="24"
               v-model="formData.password"
             />
-            <hr class="mt-3 w-100" />
-            <!-- TODO: remove the text-dark & disabled later -->
-            <button
-              class="btn d-flex justify-content-center align-items-center gap-3 w-100 fw-medium google-button text-dark"
-              @click="handleSignIn('google')"
-              disabled
-            >
-              <IconsLogosGoogle /> Continue with Google
-            </button>
           </div>
           <div class="d-flex w-50">
             <div
@@ -231,13 +233,23 @@
           {{ errorMessage }}
         </p>
         <div class="modal-footer border-secondary">
-          <button
-            type="button"
-            class="create-post-btn btn"
-            @click="handleSignIn('email')"
-          >
-            Login
-          </button>
+          <div class="d-flex gap-2">
+            <!-- TODO: remove the text-dark & disabled later -->
+            <button
+              class="btn d-flex justify-content-center align-items-center gap-2 w-100 fw-medium google-button text-dark"
+              @click="handleSignIn('google')"
+              disabled
+            >
+              <IconsLogosGoogle /> Continue with Google
+            </button>
+            <button
+              type="button"
+              class="create-post-btn btn fw-medium"
+              @click="handleSignIn('email')"
+            >
+              Login
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -257,7 +269,8 @@ export default defineNuxtComponent({
     const formData = {
       email: '',
       password: '',
-      confirmPassword: ''
+      confirmPassword: '',
+      displayName: ''
     }
     const errorMessage = ref('')
     const isError = ref(true)
@@ -313,14 +326,14 @@ export default defineNuxtComponent({
       if (
         !this.formData.email ||
         !this.formData.password ||
-        !this.formData.confirmPassword
+        !this.formData.confirmPassword ||
+        !this.formData.displayName
       ) {
         this.isError = true
         this.errorMessage = 'Fill in required field!'
         console.error('Sign up error:', this.errorMessage)
         return
       }
-
       // validation : password not match
       if (this.formData.password !== this.formData.confirmPassword) {
         this.isError = true
@@ -328,7 +341,6 @@ export default defineNuxtComponent({
         console.error('Sign up error:', this.errorMessage)
         return
       }
-
       // validation : password not match
       if (
         this.formData.password.length < 6 ||
@@ -340,17 +352,38 @@ export default defineNuxtComponent({
         return
       }
 
-      this.toggleLoadingBackdrop()
       // sending signup request to firebase
-      const result = await useFirebaseAuth.signUp(
-        this.formData.email,
-        this.formData.password
-      )
+      this.toggleLoadingBackdrop()
+      // firebaseAuth create new user & update display name
+      const firebaseAuthSignUpAndUpdate = await useFirebaseAuth
+        .signUp(this.formData.email, this.formData.password)
+        .then(async (userCredential) => {
+          await useFirebaseAuth.updateUser({
+            newDisplayName: this.formData.displayName
+          })
+          return userCredential
+        })
+        .catch((error) => {
+          return { error: error.message }
+        })
+      let firestoreCreateUser
+      if (!firebaseAuthSignUpAndUpdate.error) {
+        firestoreCreateUser = await $fetch('/api/users/create', {
+          method: 'POST',
+          body: {
+            uid: firebaseAuthSignUpAndUpdate.user.uid,
+            email: this.formData.email,
+            password: this.formData.password,
+            displayName: this.formData.displayName
+          }
+        })
+      }
 
       // Handle the error here
-      if (result && 'errorCode' in result && 'errorMessage' in result) {
+      if (firebaseAuthSignUpAndUpdate.error || firestoreCreateUser.error) {
         this.isError = true
-        this.errorMessage = result.errorMessage.slice(10)
+        this.errorMessage =
+          firebaseAuthSignUpAndUpdate.error ?? firestoreCreateUser.error
         console.error('Sign up error:', this.errorMessage)
         setTimeout(() => {
           this.toggleLoadingBackdrop()
@@ -359,7 +392,10 @@ export default defineNuxtComponent({
         // Handle successful sign up
         this.isError = false
         this.errorMessage = 'Sign up successfully'
-        console.log('Sign up successful!', result)
+        console.log('Sign up successfully!', [
+          firebaseAuthSignUpAndUpdate,
+          firestoreCreateUser
+        ])
         this.clearForm()
         this.closeModal(this.signUpModal)
         this.toggleLoadingBackdrop()

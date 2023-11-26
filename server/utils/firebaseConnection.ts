@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app'
 import { getFirestore } from 'firebase/firestore'
 import { getStorage } from 'firebase/storage'
+import { getAuth } from 'firebase/auth'
 
 const runtimeConfig = useRuntimeConfig().public
 
@@ -23,3 +24,6 @@ export const firestore = getFirestore(firebaseApp)
 
 // Get reference and export the Storage instance
 export const storage = getStorage(firebaseApp)
+
+// Get reference and export the Storage instance
+export const auth = getAuth(firebaseApp)
